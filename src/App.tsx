@@ -2,6 +2,20 @@ import React, { useEffect } from 'react';
 import './App.css';
 import { initializeFirebase, messaging } from './firebase-setup';
 
+const handleNotification = (title: string, options?: any) => {
+  if (Notification.permission === 'granted') {
+    const notification = new Notification(title, options);
+    console.log('notification sent', notification);
+  } else {
+    Notification.requestPermission().then(() => {
+      handleNotification(title, options);
+    }).catch((err) => {
+      console.log('Permission denied - Error occurred');
+      throw err;
+    })
+  }
+}
+
 function App() {
   const [firebaseInitialized, setFirebaseInitialized] = React.useState<boolean>(false);
 
@@ -16,6 +30,7 @@ function App() {
         if (currentToken) {
           console.log('token already exists...');
           console.log(currentToken);
+          // alert(currentToken);
           // Send the token to your server and update the UI if necessary
           // ...
         } else {
@@ -46,20 +61,7 @@ function App() {
       });
     }
   }, [firebaseInitialized]);
-
-  const handleNotification = (title: string, options?: any) => {
-    if (Notification.permission === 'granted') {
-      const notification = new Notification(title, options);
-      console.log('notification sent', notification);
-    } else {
-      Notification.requestPermission().then(() => {
-        handleNotification(title, options);
-      }).catch((err) => {
-        console.log('Permission denied - Error occurred');
-        throw err;
-      })
-    }
-  }
+  
 
   return (
     <div className="App">
