@@ -42,10 +42,24 @@ function App() {
           icon: image
         };
 
-        alert(notificationTitle);
+        handleNotification(notificationTitle, notificationOptions);
       });
     }
   }, [firebaseInitialized]);
+
+  const handleNotification = (title: string, options?: any) => {
+    if (Notification.permission === 'granted') {
+      const notification = new Notification(title, options);
+      console.log('notification sent', notification);
+    } else {
+      Notification.requestPermission().then(() => {
+        handleNotification(title, options);
+      }).catch((err) => {
+        console.log('Permission denied - Error occurred');
+        throw err;
+      })
+    }
+  }
 
   return (
     <div className="App">
